@@ -1,0 +1,166 @@
+﻿@using INPI.PM.Domain.UserService
+@{
+    var currentUser = (User)Session["currentUser"];
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Xenon Boostrap Admin Panel" />
+    <meta name="author" content="" />
+
+    <title>INPI</title>
+
+    <link rel="stylesheet" href="~/assets/css/fonts/linecons/css/linecons.css" />
+    <link rel="stylesheet" href="~/assets/css/fonts/fontawesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/assets/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/assets/css/xenon-core.css" />
+    <link rel="stylesheet" href="~/assets/css/xenon-forms.css" />
+    <link rel="stylesheet" href="~/assets/css/xenon-components.css" />
+    <link rel="stylesheet" href="~/assets/css/xenon-skins.css" />
+    <link rel="stylesheet" href="~/assets/css/custom.css" />
+    <script src="~/assets/js/jquery-1.11.1.min.js"></script>
+
+    @RenderSection("head", false)
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body class="page-body">
+    <div class="page-container">
+        <div class="sidebar-menu toggle-others fixed">
+            <div class="sidebar-menu-inner">
+                <header class="logo-env">
+                    <!-- logo -->
+                    <div class="logo">
+                        <a class="logo-expanded">
+                            <img src="~/assets/images/logo@2x.png" width="80" alt="" />
+                        </a>
+
+                        <a class="logo-collapsed">
+                            <img src="~/assets/images/logo-collapsed@2x.png" width="40" alt="" />
+                        </a>
+                    </div>
+                    <!-- This will toggle the mobile menu and will be visible only on mobile devices -->
+                    <div class="mobile-menu-toggle visible-xs">
+                        <a href="#" data-toggle="user-info-menu">
+                            <i class="fa-bell-o"></i>
+                            <span class="badge badge-success">7</span>
+                        </a>
+                        <a href="#" data-toggle="mobile-menu">
+                            <i class="fa-bars"></i>
+                        </a>
+                    </div>
+                </header>
+
+                <ul id="main-menu" class="main-menu">
+                    @if (currentUser.IsPermissionAvaliable((int)PermissionFactory.PermissionEnum.主页))
+                    {
+                        <li><a href="/Home"><i class="linecons-desktop"></i><span class="title">主页</span></a></li>
+                    }
+                    @if (currentUser.IsPermissionAvaliable((int)PermissionFactory.PermissionEnum.项目管理))
+                    {
+                        <li><a href="/Project"><i class="linecons-calendar"></i><span class="title">项目管理</span></a></li>
+                    }
+                    @if (currentUser.IsPermissionAvaliable((int)PermissionFactory.PermissionEnum.客户管理))
+                    {
+                        <li>
+                            <a href="javsscript:;"><i class="linecons-user"></i><span class="title">客户管理</span></a>
+                            <ul>
+                                @if (currentUser.IsPermissionAvaliable((int)PermissionFactory.PermissionEnum.客户))
+                                {
+                                    <li><a href="/Customer"><span class="title">客户</span></a></li>
+                                }
+                                @if (currentUser.IsPermissionAvaliable((int)PermissionFactory.PermissionEnum.客户联系人))
+                                {
+                                    <li><a href="/Customer/Contact"><span class="title">客户联系人</span></a></li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (currentUser.IsPermissionAvaliable((int)PermissionFactory.PermissionEnum.系统管理))
+                    {
+                        <li>
+                            <a href="javascript:;"><i class="linecons-cog"></i><span class="title">系统管理</span></a>
+                            <ul>
+                                @if (currentUser.IsPermissionAvaliable((int)PermissionFactory.PermissionEnum.用户管理))
+                                {
+                                    <li><a href="/User"><span class="title">用户管理</span></a></li>
+                                }
+                                @if (currentUser.IsPermissionAvaliable((int)PermissionFactory.PermissionEnum.角色管理))
+                                {
+                                    <li><a href="/User/Role"><span class="title">角色管理</span></a></li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <nav class="navbar user-info-navbar" role="navigation">
+                <!-- Left links for user info navbar -->
+                <ul class="user-info-menu left-links list-inline list-unstyled">
+                    <li class="hidden-sm hidden-xs" style="min-height: 76px;">
+                        <a href="#" data-toggle="sidebar">
+                            <i class="fa-bars"></i>
+                        </a>
+                    </li>
+                </ul>
+                <!-- Right links for user info navbar -->
+                <ul class="user-info-menu right-links list-inline list-unstyled">
+                    <li class="dropdown user-profile" style="min-height: 76px;">
+                        <a href="#" data-toggle="dropdown">
+                            <span>
+                                @(((INPI.PM.Domain.UserService.User)Session["currentUser"]).RealName)
+                                <i class="fa-angle-down"></i>
+                            </span>
+                        </a>
+
+                        <ul class="dropdown-menu user-profile-menu list-unstyled">
+                            <li>
+                                <a href="#">
+                                    <i class="fa-user"></i>
+                                    修改密码
+                                </a>
+                            </li>
+                            <li class="last">
+                                <a href="/Login/Logout">
+                                    <i class="fa-lock"></i>
+                                    退出登录
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- Bottom Scripts -->
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script src="~/assets/js/TweenMax.min.js"></script>
+    <script src="~/assets/js/resizeable.js"></script>
+    <script src="~/assets/js/joinable.js"></script>
+    <script src="~/assets/js/xenon-api.js"></script>
+    <script src="~/assets/js/xenon-toggles.js"></script>
+    <script src="~/assets/js/toastr/toastr.min.js"></script>
+
+    <!-- JavaScripts initializations and stuff -->
+    <script src="~/assets/js/xenon-custom.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var url = window.location.pathname;
+            $("[href='" + url + "']").parent().parents("li").children("a").trigger("click");
+        });
+    </script>
+</body>
+</html>
+
+

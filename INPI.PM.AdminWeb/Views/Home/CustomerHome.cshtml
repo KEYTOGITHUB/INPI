@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    @foreach (INPI.PM.Domain.ProjectService.Project project in ViewBag.projects)
+    {
+        <div class="col-md-12">
+            <div class="panel panel-flat panel-color panel-info">
+                <div class="panel-heading">@project.ProjectName</div>
+                <div class="panel-body">
+                    <ul class="cbp_tmtimeline">
+                        @foreach (INPI.PM.Domain.ProjectService.ProjectSchedule schedule in project.ProjectSchedules)
+                        {
+                            <li>
+                                <time class="cbp_tmtime" datetime="2014-10-03T18:30"><span class="large">@schedule.ActualCompleteDate.Value.ToString("yyyy-MM-dd")</span> </time>
+                                <div class="cbp_tmicon timeline-bg-primary">
+                                    <i class="fa-calendar"></i>
+                                </div>
+                                <div class="cbp_tmlabel">
+                                    <span>@schedule.Step.StepName</span>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+</div>

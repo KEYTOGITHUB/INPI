@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blueprint: Vertical Timeline</title>
+    <meta name="description" content="Blueprint: Vertical Timeline" />
+    <meta name="keywords" content="timeline, vertical, layout, style, component, web development, template, responsive" />
+    <meta name="author" content="Codrops" />
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link href="~/assets/css/default.css" rel="stylesheet" />
+    <link href="~/assets/css/component.css" rel="stylesheet" />
+    <script src="~/assets/js/modernizr.custom.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        @foreach (INPI.PM.Domain.ProjectService.Project project in ViewBag.projects)
+        {
+            <header class="clearfix">
+                <h1>@project.ProjectName</h1>
+            </header>
+            <div class="main">
+                <ul class="cbp_tmtimeline">
+                    @foreach (INPI.PM.Domain.ProjectService.ProjectSchedule schedule in project.ProjectSchedules)
+                    {
+                        <li>
+                            <time class="cbp_tmtime" datetime="@schedule.ActualCompleteDate">
+                                <span>@schedule.ActualCompleteDate.Value.Year</span>
+                                <span>@(schedule.ActualCompleteDate.Value.Month + "-" + schedule.ActualCompleteDate.Value.Day)</span>
+                            </time>
+                            <div class="cbp_tmlabel">
+                                <h2>@schedule.Step.StepName</h2>
+                                <p>计划@(schedule.EstimatedCompleteDate.ToString("yyyy-MM-dd"))完成，实际@(schedule.ActualCompleteDate.Value.ToString("yyyy-MM-dd"))完成</p>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</body>
+</html>
+

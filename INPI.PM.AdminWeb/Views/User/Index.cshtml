@@ -1,0 +1,84 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section head{
+    <link rel="stylesheet" href="~/assets/js/datatables/dataTables.bootstrap.css" />
+}
+
+<div class="page-title">
+    <div class="title-env">
+        <h1 class="title">用户管理</h1>
+    </div>
+    <div class="breadcrumb-env">
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="/Home"><i class="fa-home"></i>主页</a>
+            </li>
+            <li>
+                <a href="#">用户管理</a>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">用户列表</h3>
+        <div class="panel-options">
+            <button class="btn btn-info" onclick="javascript: window.location.href='/User/UserEdit'">新建用户</button>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-striped" id="userList">
+            <thead>
+                <tr>
+                    <th>用户名</th>
+                    <th>姓名</th>
+                    <th>联系方式</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody class="middle-align">
+                @foreach (INPI.PM.Domain.UserService.User user in ViewBag.users)
+                {
+                    <tr>
+                        <td>@user.UserName</td>
+                        <td>@user.RealName</td>
+                        <td>@user.PhoneNum</td>
+                        <td>
+                            <a href="/User/UserEdit?guid=@user.GUID" class="btn btn-secondary btn-sm btn-icon icon-left">编辑</a>
+                            <a onclick="deleteUser('@user.GUID')" class="btn btn-danger btn-sm btn-icon icon-left">删除</a>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="~/assets/js/datatables/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/js/datatables/dataTables.bootstrap.js"></script>
+<script src="~/assets/js/datatables/yadcf/jquery.dataTables.yadcf.js"></script>
+<script src="~/assets/js/datatables/tabletools/dataTables.tableTools.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#userList").dataTable();
+    });
+
+    function deleteUser(guid) {
+        $.ajax({
+            url: "/User/DeleteUser",
+            data: { guid: guid },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    window.location.reload();
+                } else {
+                    toastr.error(data.msg);
+                }
+            }
+        });
+    }
+</script>
+

@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewBag.Title = "Role";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row-content am-cf">
+    <div class="row">
+        <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+            <div class="widget am-cf">
+                <div class="widget-head am-cf">
+                    <div class="widget-title am-fl">角色管理</div>
+                    <div class="widget-function am-fr">
+                        <a href="/User/RoleEdit" class="am-btn am-btn-default">新建角色</a>
+                    </div>
+                </div>
+                <div class="widget-body  widget-body-lg am-fr">
+                    <table style="width:100%" class="am-table am-table-compact am-table-striped tpl-table-black " id="example-r">
+                        <thead>
+                            <tr>
+                                <th>角色名称</th>
+                                <th>角色描述</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (INPI.PM.Domain.UserService.Role role in ViewBag.roles)
+                            {
+                                <tr>
+                                    <td>@role.RoleName</td>
+                                    <td>@role.RoleDesc</td>
+                                    <td>
+                                        <div class="tpl-table-black-operation">
+                                            <a href="javascript:;">
+                                                <i class="am-icon-pencil"></i> 编辑
+                                            </a>
+                                            <a href="javascript:;" class="tpl-table-black-operation-del">
+                                                <i class="am-icon-trash"></i> 删除
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

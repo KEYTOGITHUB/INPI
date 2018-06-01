@@ -1,0 +1,91 @@
+﻿@model INPI.PM.Domain.CustomerService.Customer
+@{
+    ViewBag.Title = "客户信息";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-title">
+    <div class="title-env">
+        <h1 class="title">客户信息</h1>
+    </div>
+    <div class="breadcrumb-env">
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="/Home"><i class="fa-home"></i>主页</a>
+            </li>
+            <li>
+                <a href="/Customer">客户</a>
+            </li>
+            <li>
+                <a href="#">客户信息</a>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">客户编辑</h3>
+    </div>
+    <div class="panel-body">
+        <form role="form" class="validate" method="post" id="formCustomer">
+            <div class="form-group">
+                <label class="control-label">公司名称</label>
+                <input type="text" value="@Model.CompanyName" class="form-control" id="txtCompanyName" name="companyName" data-validate="required" placeholder="请输入公司名称" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">电话</label>
+                <input type="text" value="@Model.PhoneNum" class="form-control" id="txtPhoneNum" name="phoneNum" placeholder="请输入电话" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">传真</label>
+                <input type="text" value="@Model.FaxNum" class="form-control" id="txtFaxNum" name="faxNum" placeholder="请输入传真" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">邮编</label>
+                <input type="text" value="@Model.PostCode" class="form-control" id="txtPostCode" name="postCode" placeholder="请输入邮编" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">地址</label>
+                <input type="text" value="@Model.Address" class="form-control" id="txtAddress" name="address" placeholder="请输入地址" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/assets/js/jquery-validate/jquery.validate.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#formCustomer").submit(function () {
+            event.preventDefault();
+            if ($("#formCustomer").valid()) {
+                save();
+            }
+        });
+    });
+
+    function save() {
+        var companyName = $("#txtCompanyName").val();
+        var phoneNum = $("#txtPhoneNum").val();
+        var faxNum = $("#txtFaxNum").val();
+        var postCode = $("#txtPostCode").val();
+        var address = $("#txtAddress").val();
+        $.ajax({
+            url: "/Customer/SaveCustomer?guid=@(Model.GUID == null ? "" : Model.GUID)",
+            data: {
+                companyName: companyName, phoneNum: phoneNum, faxNum: faxNum, postCode: postCode, address: address
+            },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    window.location.href = "/Customer";
+                } else {
+                    toastr.error(data.msg);
+                }
+            }
+        });
+    }
+</script>

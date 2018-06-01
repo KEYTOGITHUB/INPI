@@ -1,0 +1,82 @@
+﻿@using INPI.PM.Domain.CustomerService
+@{
+    ViewBag.Title = "项目列表页";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@section head{
+    <link rel="stylesheet" href="~/assets/js/datatables/dataTables.bootstrap.css" />    
+}
+
+<div class="page-title">
+    <div class="title-env">
+        <h1 class="title">主页</h1>
+    </div>
+    <div class="breadcrumb-env">
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="@Url.Action("Index","Home")"><i class="fa-home"></i>主页</a>
+            </li>
+            <li>
+                <a href="#">@ViewBag.ListName</a>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">项目列表</h3>
+        <div class="panel-options">
+            <button class="btn btn-info" id="exportData" onclick="exportData()">导出数据</button>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-striped" id="projectList">
+            <thead>
+                <tr>
+                    <th>项目编号</th>
+                    <th>项目名称</th>
+                    <th>所属客户</th>
+                    <th>预计交付日期</th>
+                    <th>项目进度</th>
+                    <th>预计完成日期</th>
+                    <th>剩余天数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody class="middle-align">
+                @foreach (INPI.PM.Domain.ProjectService.Project project in ViewBag.projectList)
+                {
+                    <tr>
+                        <td>@project.ProjectCode</td>
+                        <td>@project.ProjectName</td>
+                        <td>@(string.IsNullOrEmpty(project.CustomerGuid) ? "" : new CustomerFactory().GetCustomer(project.CustomerGuid)?.CompanyName)</td>
+                        <td>@project.EstimatedDeliveryDate.ToString("yyyy-MM-dd")</td>
+                        <td>@(project.CurrentStep == null?"":project.CurrentStep.StepName)</td>
+                        <td>@(project.ProjectCurrentStepEstimatedCompleteDate==null?"":project.ProjectCurrentStepEstimatedCompleteDate.Value.ToString("yyyy-MM-dd"))</td>
+                        <td>@project.ProjectCurrentStepOverduDays</td>
+                        <td>
+                            <a href="/Project/ProjectEdit?guid=@project.GUID" class="btn btn-secondary btn-sm btn-icon icon-left">编辑</a>
+                            <a href="/Project/ProjectPlan?guid=@project.GUID" class="btn btn-secondary btn-sm btn-icon icon-left">计划</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="~/assets/js/datatables/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/js/datatables/dataTables.bootstrap.js"></script>
+<script src="~/assets/js/datatables/yadcf/jquery.dataTables.yadcf.js"></script>
+<script src="~/assets/js/datatables/tabletools/dataTables.tableTools.min.js"></script>
+
+<script>
+    $(function () {
+        $('#projectList').dataTable();
+    })
+
+    function exportData() {
+        window.location.href = "@Url.Action("ExportProject", "Home")?key=@ViewBag.key";
+    }
+</script>

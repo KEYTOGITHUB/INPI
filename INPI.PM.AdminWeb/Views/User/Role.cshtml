@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "Role";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@section head{
+    <link rel="stylesheet" href="~/assets/js/datatables/dataTables.bootstrap.css" />
+}
+
+<div class="page-title">
+    <div class="title-env">
+        <h1 class="title">角色管理</h1>
+    </div>
+    <div class="breadcrumb-env">
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="/Home"><i class="fa-home"></i>主页</a>
+            </li>
+            <li>
+                <a href="#">角色管理</a>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">角色列表</h3>
+        <div class="panel-options">
+            <button class="btn btn-info" onclick="javascript: window.location.href='/User/RoleEdit'">新建角色</button>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-striped" id="roleList">
+            <thead>
+                <tr>
+                    <th>角色名称</th>
+                    <th>角色描述</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody class="middle-align">
+                @foreach (INPI.PM.Domain.UserService.Role role in ViewBag.roles)
+                {
+                    <tr>
+                        <td>@role.RoleName</td>
+                        <td>@role.RoleDesc</td>
+                        <td>
+                            <a href="/User/RoleEdit?guid=@role.GUID" class="btn btn-secondary btn-sm btn-icon icon-left">编辑</a>
+                            <a onclick="deleteRole('@role.GUID')" class="btn btn-danger btn-sm btn-icon icon-left">删除</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="~/assets/js/datatables/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/js/datatables/dataTables.bootstrap.js"></script>
+<script src="~/assets/js/datatables/yadcf/jquery.dataTables.yadcf.js"></script>
+<script src="~/assets/js/datatables/tabletools/dataTables.tableTools.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#roleList").dataTable();
+    });
+
+    function deleteRole(guid) {
+        $.ajax({
+            url: "/User/DeleteRole",
+            data: { guid: guid },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    window.location.reload();
+                } else {
+                    toastr.error(data.msg);
+                }
+            }
+        });
+    }
+</script>
+
+
+

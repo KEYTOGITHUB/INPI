@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>项目管理系统</title>
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link href="~/assets/css/amazeui.min.css" rel="stylesheet" />
+    <link href="~/assets/css/amazeui.datatables.min.css" rel="stylesheet" />
+    <link href="~/assets/css/app.css" rel="stylesheet" />
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/theme.js"></script>
+</head>
+
+<body data-type="login">
+    <div class="am-g tpl-g">
+        <!-- 风格切换 -->
+        <div class="tpl-skiner" style="display:none;">
+            <div class="tpl-skiner-toggle am-icon-cog">
+            </div>
+            <div class="tpl-skiner-content">
+                <div class="tpl-skiner-content-title">
+                    选择主题
+                </div>
+                <div class="tpl-skiner-content-bar">
+                    <span class="skiner-color skiner-white" data-color="theme-white"></span>
+                    <span class="skiner-color skiner-black" data-color="theme-black"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="am-alert am-alert-success" data-am-alert id="alertSuccess" style="display:none;">
+            <p>注册成功</p>
+        </div>
+
+        <div class="tpl-login">
+            <div class="tpl-login-content">
+                <div class="tpl-login-title">注册用户</div>
+
+                <form class="am-form tpl-form-line-form">
+                    <div class="am-form-group">
+                        <input type="text" class="tpl-form-input" id="txtUserName" placeholder="用户名" />
+                    </div>
+
+                    <div class="am-form-group">
+                        <input type="password" class="tpl-form-input" id="txtPassword" placeholder="请输入密码" />
+                    </div>
+
+                    <div class="am-form-group">
+                        <input type="password" class="tpl-form-input" id="txtPasswordSec" placeholder="再次输入密码" />
+                    </div>
+
+                    <div class="am-form-group">
+                        <input type="text" class="tpl-form-input" id="txtRealName" placeholder="姓名" />
+                    </div>
+
+                    <div class="am-form-group">
+                        <input type="text" class="tpl-form-input" id="txtCompany" placeholder="公司" />
+                    </div>
+
+                    <div class="am-form-group">
+                        <input type="text" class="tpl-form-input" id="txtPosition" placeholder="职位" />
+                    </div>
+
+                    <div class="am-form-group">
+                        <input type="text" class="tpl-form-input" id="txtPhoneNum" placeholder="联系方式" />
+                    </div>
+
+                    <div class="am-form-group">
+                        <input type="text" class="tpl-form-input" id="txtFaxNum" placeholder="传真" />
+                    </div>
+
+                    <div class="am-form-group">
+                        <input type="text" class="tpl-form-input" id="txtAddress" placeholder="地址" />
+                    </div>
+
+                    <div class="am-form-group">
+                        <input type="text" class="tpl-form-input" id="txtPostCode" placeholder="邮编" />
+                    </div>
+
+                    <div class="am-form-group">
+                        <button type="button" onclick="save()" class="am-btn am-btn-primary am-btn-block tpl-btn-bg-color-success tpl-login-btn">提交</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="~/assets/js/amazeui.min.js"></script>
+    <script src="~/assets/js/app.js"></script>
+    <script type="text/javascript">
+        function save() {
+            var userName = $("#txtUserName").val();
+            var password = $("#txtPassword").val();
+            var realName = $("#txtRealName").val();
+            var company = $("#txtCompany").val();
+            var position = $("#txtPosition").val();
+            var phoneNum = $("#txtPhoneNum").val();
+            var faxNum = $("#txtFaxNum").val();
+            var address = $("#txtAddress").val();
+            var postCode = $("#txtPostCode").val();
+            var data = {
+                userName: userName, password: password, realName: realName, company: company, position: position,
+                phoneNum: phoneNum, faxNum: faxNum, address: address, postCode: postCode
+            };
+            $.ajax({
+                url: "/Login/SaveRegister",
+                data: data,
+                type: "post",
+                success: function (data) {
+                    if (data.result == 1) {
+                        $("#alertSuccess").show();
+                        setTimeout(function () {
+                            window.location.href = "/Login";
+                        }, 2);
+                    } else {
+
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

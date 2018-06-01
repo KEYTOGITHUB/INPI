@@ -1,0 +1,86 @@
+﻿@model INPI.PM.Domain.UserService.User
+@{
+    ViewBag.Title = "EditRole";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row-content am-cf">
+    <div class="row">
+        <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+            <div class="widget am-cf">
+                <div class="widget-head am-cf">
+                    <div class="widget-title am-fl">用户信息</div>
+                </div>
+                <div class="widget-body am-fr">
+                    <form class="am-form tpl-form-line-form">
+                        <div class="am-form-group">
+                            <label for="txtUserName" class="am-u-sm-3 am-form-label">用户名 <span class="tpl-form-line-small-title">User Name</span></label>
+                            <div class="am-u-sm-9">
+                                <input type="text" value="@Model.UserName" class="tpl-form-input" id="txtUserName" placeholder="请输入用户名" />
+                            </div>
+                        </div>
+
+                        <div class="am-form-group">
+                            <label for="txtRealName" class="am-u-sm-3 am-form-label">姓名 <span class="tpl-form-line-small-title">Real Name</span></label>
+                            <div class="am-u-sm-9">
+                                <input type="text" value="@Model.RealName" id="txtRealName" class="tpl-form-input" placeholder="请输入姓名" />
+                            </div>
+                        </div>
+
+                        <div class="am-form-group">
+                            <label for="txtPhoneNum" class="am-u-sm-3 am-form-label">联系方式 <span class="tpl-form-line-small-title">Phone Num.</span></label>
+                            <div class="am-u-sm-9">
+                                <input type="text" value="@Model.PhoneNum" id="txtPhoneNum" class="tpl-form-input" placeholder="请输入联系方式" />
+                            </div>
+                        </div>
+
+                        <div class="am-form-group">
+                            <label class="am-u-sm-3 am-form-label">角色 <span class="tpl-form-line-small-title">Roles</span></label>
+                            <div class="am-u-sm-9">
+                                <div class="am-form-group">
+                                    @foreach (INPI.PM.Domain.UserService.Role role in ViewBag.roles)
+                                    {
+                                        <label class="am-checkbox">
+                                            <input type="checkbox" name="role" value="@role.GUID" data-am-ucheck />@role.RoleName
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="am-form-group">
+                            <div class="am-u-sm-9 am-u-sm-push-3">
+                                <button type="button" onclick="save()" class="am-btn am-btn-primary tpl-btn-bg-color-success ">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function save() {
+        var userName = $("#txtUserName").val();
+        var realName = $("#txtRealName").val();
+        var phoneNum = $("#txtPhoneNum").val();
+        var roles = [];
+        $("[name='role']:checked").each(function () {
+            roles.push($(this).val());
+        });
+        $.ajax({
+            url: "/User/SaveUser?guid=@Model.GUID",
+            data: { userName: userName, realName: realName, phoneNum: phoneNum, roles: roles.join() },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    window.location.href = "/User";
+                } else {
+
+                }
+            }
+        });
+    }
+</script>
+

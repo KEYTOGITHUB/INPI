@@ -1,0 +1,78 @@
+﻿@model INPI.PM.Domain.UserService.Role
+@{
+    ViewBag.Title = "EditRole";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row-content am-cf">
+    <div class="row">
+        <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+            <div class="widget am-cf">
+                <div class="widget-head am-cf">
+                    <div class="widget-title am-fl">角色信息</div>
+                </div>
+                <div class="widget-body am-fr">
+                    <form class="am-form tpl-form-line-form">
+                        <div class="am-form-group">
+                            <label for="txtRoleName" class="am-u-sm-3 am-form-label">角色名称 <span class="tpl-form-line-small-title">Role Name</span></label>
+                            <div class="am-u-sm-9">
+                                <input type="text" value="@Model.RoleName" class="tpl-form-input" id="txtRoleName" placeholder="请输入角色名称" />
+                            </div>
+                        </div>
+
+                        <div class="am-form-group">
+                            <label for="txtRoleDesc" class="am-u-sm-3 am-form-label">角色描述 <span class="tpl-form-line-small-title">Role Desc.</span></label>
+                            <div class="am-u-sm-9">
+                                <input type="text" value="@Model.RoleDesc" id="txtRoleDesc" class="tpl-form-input" placeholder="请输入角色描述" />
+                            </div>
+                        </div>
+
+                        <div class="am-form-group">
+                            <label class="am-u-sm-3 am-form-label">权限 <span class="tpl-form-line-small-title">Permissions</span></label>
+                            <div class="am-u-sm-9">
+                                <div class="am-form-group">
+                                    @foreach (INPI.PM.Domain.UserService.Permission permission in ViewBag.permissions)
+                                    {
+                                        <label class="am-checkbox">
+                                            <input type="checkbox" name="permission" value="@permission.PermissionId" data-am-ucheck />@permission.PermissionName
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="am-form-group">
+                            <div class="am-u-sm-9 am-u-sm-push-3">
+                                <button type="button" onclick="save()" class="am-btn am-btn-primary tpl-btn-bg-color-success ">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function save() {
+        var roleName = $("#txtRoleName").val();
+        var roleDesc = $("#txtRoleDesc").val();
+        var permissions = [];
+        $("[name='permission']:checked").each(function () {
+            permissions.push($(this).val());
+        });
+        $.ajax({
+            url: "/User/SaveRole?guid=@Model.GUID",
+            data: { roleName: roleName, roleDesc: roleDesc, permissions: permissions.join() },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    window.location.href = "/User/Role";
+                } else {
+
+                }
+            }
+        });
+    }
+</script>
+

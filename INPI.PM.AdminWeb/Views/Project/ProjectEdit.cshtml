@@ -1,0 +1,280 @@
+﻿@model INPI.PM.Domain.ProjectService.Project
+@using INPI.PM.Domain.CustomerService
+@using INPI.PM.Domain.UserService
+@{
+    ViewBag.Title = "项目信息";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-title">
+    <div class="title-env">
+        <h1 class="title">项目信息</h1>
+    </div>
+    <div class="breadcrumb-env">
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="/Home"><i class="fa-home"></i>主页</a>
+            </li>
+            <li>
+                <a href="/Project">项目管理</a>
+            </li>
+            <li>
+                <a href="#">项目信息</a>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">项目编辑</h3>
+    </div>
+    <div class="panel-body">
+        <form role="form" method="post" class="validate" id="formProject">
+            <div class="form-group">
+                <label class="control-label">项目编号</label>
+                <input type="text" class="form-control" value="@Model.ProjectCode" id="txtProjectCode" name="projectCode" data-validate="required" placeholder="请输入项目编号" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">项目名称</label>
+                <input type="text" class="form-control" value="@Model.ProjectName" id="txtProjectName" name="projectName" data-validate="required" placeholder="请输入项目名称" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">所属客户</label>
+                <input type="text" id="txtCustomerGuid" value="@Model.CustomerGuid" name="customerGuid" style="display:none;" />
+                <input type="text" class="form-control" value="@(string.IsNullOrEmpty(Model.CustomerGuid) ? "" : new CustomerFactory().GetCustomer(Model.CustomerGuid)?.CompanyName)" id="txtCustomerName" name="customerName" data-validate="required" placeholder="请选择所属客户" readonly onclick="javascript: $('#modalCustomer').modal('show');"/>
+            </div>
+            <div class="form-group">
+                <label class="control-label">客户联系人</label>
+                <input type="text" id="txtContactGuid" value="@Model.ContactGuid" name="contactGuid" style="display:none;" />
+                <input type="text" class="form-control" value="@(string.IsNullOrEmpty(Model.ContactGuid) ? "" : new ContactFactory().GetAllContacts().Where(c => c.GUID.Equals(Model.ContactGuid)).FirstOrDefault()?.RealName)" id="txtContactName" name="contactName" data-validate="required" placeholder="请选择客户联系人" readonly onclick="showSelectWindow();" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">项目开始时间</label>
+                <input type="text" class="form-control" value="@Model.CreateDate.ToString("yyyy-MM-dd")" id="txtCreateDate" name="createDate" data-validate="required" placeholder="请选择项目开始时间" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">预计交付日期</label>
+                <input type="text" class="form-control" value="@Model.EstimatedDeliveryDate.ToString("yyyy-MM-dd")" id="txtEstimatedDeliveryDate" name="estimatedDeliveryDate" data-validate="required" placeholder="请选择预计交付日期" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">项目负责人</label>
+                <input type="text" id="txtPersonInCharge" value="@Model.PersonInCharge" name="personInCharge" style="display:none;" />
+                <input type="text" class="form-control" value="@(string.IsNullOrEmpty(Model.PersonInCharge) ? "" : new UserFactory().GetUser(Model.PersonInCharge).RealName)" id="txtPersonInChargeName" name="personInChargeName" data-validate="required" placeholder="请选择项目负责人" readonly onclick="javascript: $('#modalPersonInCharge').modal('show');" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">客户资料</label>
+                <input type="file" class="form-control" id="fileAttachment" name="attachment" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCustomer">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">选择客户</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped" id="customerList">
+                    <thead>
+                        <tr>
+                            <th>公司名称</th>
+                            <th>地址</th>
+                            <th>电话</th>
+                            <th>传真</th>
+                            <th>邮编</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="middle-align">
+                        @foreach (INPI.PM.Domain.CustomerService.Customer customer in ViewBag.customers)
+                        {
+                            <tr>
+                                <td>@customer.CompanyName</td>
+                                <td>@customer.Address</td>
+                                <td>@customer.PhoneNum</td>
+                                <td>@customer.FaxNum</td>
+                                <td>@customer.PostCode</td>
+                                <td>
+                                    <a onclick="selectCustomer('@customer.GUID','@customer.CompanyName')" class="btn btn-info btn-sm btn-icon icon-left">选择</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalContact">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">选择客户联系人</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>联系人姓名</th>
+                            <th>公司</th>
+                            <th>联系电话</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactList">
+                       @{
+                           if (!string.IsNullOrEmpty(Model.CustomerGuid))
+                           {
+                               foreach (INPI.PM.Domain.CustomerService.Contact contact in new ContactFactory().GetAllContacts().Where(c=>c.CustomerGuid.Equals(Model.CustomerGuid)).ToList())
+                               {
+                                <tr>
+                                    <td>@contact.RealName</td>
+                                    <td>@contact.Company</td>
+                                    <td>@contact.PhoneNum</td>
+                                    <td>
+                                        <a onclick="selectContact('@contact.GUID','@contact.RealName')" class="btn btn-info btn-sm btn-icon icon-left">选择</a>
+                                    </td>
+                                </tr>
+                               }
+                           }
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPersonInCharge">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">选择合同负责人</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>姓名</th>
+                            <th>联系方式</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (INPI.PM.Domain.UserService.User user in ViewBag.users)
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                <td>@user.RealName</td>
+                                <td>@user.PhoneNum</td>
+                                <td>
+                                    <a onclick="selectPersonInCharge('@user.GUID','@user.RealName')" class="btn btn-info btn-sm btn-icon icon-left">选择</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/assets/js/jquery-validate/jquery.validate.min.js"></script>
+<script src="~/assets/js/datepicker/bootstrap-datepicker.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#txtCreateDate").datepicker({
+            format: "yyyy-mm-dd",
+            todayBtn: "linked",
+            autoclose: true,
+            language: "zh-CN"
+        });
+        $("#txtEstimatedDeliveryDate").datepicker({
+            format: "yyyy-mm-dd",
+            todayBtn: "linked",
+            autoclose: true,
+            language: "zh-CN"
+        });
+        $("#formProject").submit(function () {
+            event.preventDefault();
+            if ($("#formProject").valid()) {
+                save();
+            }
+        });
+    });
+
+    function save() {
+        $.ajax({
+            url: '/Project/SaveProject?guid=@(Model.GUID == null ? "" : Model.GUID)',
+            data: $("#formProject").serialize(),
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    window.location.href = "/Project";
+                } else {
+
+                }
+            }
+        });
+    }
+
+    function selectCustomer(guid, name) {
+        if (guid != '@Model.CustomerGuid') {
+            $('#txtContactGuid').val('');
+            $('#txtContactName').val('');
+            $('#contactList').html('');
+        }
+        $("#txtCustomerGuid").val(guid);
+        $("#txtCustomerName").val(name);
+        $("#modalCustomer").modal("hide");
+        $.get('@Url.Action("GetProjectContactsByCustomerGuid","Project")?guid=' + guid, function (data) {
+            if (data.result == 1 && data.dataList != undefined && data.dataList.length>0) {
+                var str = "";
+                for (var i = 0; i < data.dataList.length; i++) {
+                    str += '<tr>'+
+                                '<td>' + data.dataList[i].RealName + '</td>'+
+                                '<td>' + data.dataList[i].Company + '</td>'+
+                                '<td>' + data.dataList[i].PhoneNum + '</td>'+
+                                '<td>'+
+                                    '<a onclick="selectContact(\'' + data.dataList[i].GUID+'\',\''+data.dataList[i].RealName+'\')" class="btn btn-info btn-sm btn-icon icon-left">选择</a>'+
+                                '</td>'+
+                           '</tr>';
+
+                } 
+                $('#contactList').html(str);
+            }
+        })
+    }
+
+    function selectContact(guid, name) {
+        $("#txtContactGuid").val(guid);
+        $("#txtContactName").val(name);
+        $("#modalContact").modal("hide");
+    }
+
+    function selectPersonInCharge(guid, name) {
+        $("#txtPersonInCharge").val(guid);
+        $("#txtPersonInChargeName").val(name);
+        $("#modalPersonInCharge").modal("hide");
+    }
+
+    function showSelectWindow() {
+        if ($("#txtCustomerGuid").val() == "") {
+            alert("请先选择所属客户");
+        } else {
+            $('#modalContact').modal('show');
+        }
+    }
+</script>
+

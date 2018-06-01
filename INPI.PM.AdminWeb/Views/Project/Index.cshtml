@@ -1,0 +1,173 @@
+﻿@using INPI.PM.Domain.CustomerService
+@using INPI.PM.Domain.UserService
+@{
+    ViewBag.Title = "项目管理";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@section head{
+    <link rel="stylesheet" href="~/assets/js/datatables/dataTables.bootstrap.css" />
+}
+
+    <div class="page-title">
+        <div class="title-env">
+            <h1 class="title">项目管理</h1>
+        </div>
+        <div class="breadcrumb-env">
+            <ol class="breadcrumb bc-1">
+                <li>
+                    <a href="/Home"><i class="fa-home"></i>主页</a>
+                </li>
+                <li>
+                    <a href="#">项目管理</a>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">项目列表</h3>
+        <div class="panel-options">
+            <button class="btn btn-info" onclick="javascript: window.location.href='/Project/ProjectEdit'">新建项目</button>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-striped" id="projectList">
+            <thead>
+                <tr>
+                    <th>项目编号</th>
+                    <th>项目名称</th>
+                    <th>所属客户</th>
+                    <th>预计交付日期</th>
+                    <th>项目进度</th>
+                    <th>是否逾期</th>
+                    <th>逾期时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody class="middle-align">
+                @foreach (INPI.PM.Domain.ProjectService.Project project in ViewBag.projects)
+                {
+                    <tr>
+                        <td>@project.ProjectCode</td>
+                        <td>@project.ProjectName</td>
+                        <td>@(new CustomerFactory().GetCustomer(project.CustomerGuid)?.CompanyName)</td>
+                        <td>@project.EstimatedDeliveryDate.ToString("yyyy-MM-dd")</td>
+                        <td>@(project.CurrentStep == null ? "" : project.CurrentStep.StepName)</td>
+                        <td>@(project.OverdueDays > 0 ? "是" : "否")</td>
+                        <td>@(project.OverdueDays)</td>
+                        <td>
+                            <a onclick="nextStep('@project.GUID')" class="btn btn-info btn-sm btn-icon icon-left">@project.NextStep.StepName</a>
+                            <a href="/Project/ProjectEdit?guid=@project.GUID" class="btn btn-secondary btn-sm btn-icon icon-left">编辑</a>
+                            <a href="/Project/ProjectPlan?guid=@project.GUID" class="btn btn-secondary btn-sm btn-icon icon-left">计划</a>
+                            @*<a onclick="deleteProject('@project.GUID')" class="btn btn-danger btn-sm btn-icon icon-left">删除</a>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNextStep">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">项目当前节点信息</h4>
+            </div>
+            <div class="modal-body">
+                @*<div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="txtEstimatedDate" class="control-label">预计完成时间</label>
+                            <input type="text" class="form-control" id="txtEstimatedDate" placeholder="请选择预计完成时间" />
+                        </div>
+                    </div>
+                </div>*@
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="txtActualDate" class="control-label">实际开始时间</label>
+                            <input type="text" class="form-control" id="txtActualDate" placeholder="请选择实际开始时间" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="personInCharge" class="control-label">负责人</label>
+                            <input type="text" class="form-control" id="personInCharge" placeholder="请填写节点负责人" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-info" onclick="goToNextStep()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/assets/js/datepicker/bootstrap-datepicker.js"></script>
+<script src="~/assets/js/datatables/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/js/datatables/dataTables.bootstrap.js"></script>
+<script src="~/assets/js/datatables/yadcf/jquery.dataTables.yadcf.js"></script>
+<script src="~/assets/js/datatables/tabletools/dataTables.tableTools.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#txtEstimatedDate").datepicker({
+            format: "yyyy-mm-dd",
+            todayBtn: "linked",
+            autoclose: true,
+            language: "zh-CN"
+        });
+        $("#txtActualDate").datepicker({
+            format: "yyyy-mm-dd",
+            todayBtn: "linked",
+            autoclose: true,
+            language: "zh-CN"
+        });
+        $("#projectList").dataTable();
+    });
+
+    var projectGuid;
+    function nextStep(guid) {
+        projectGuid = guid;
+        $("#modalNextStep").modal("show");
+    }
+
+    function goToNextStep() {
+        //var estimatedDate = $("#txtEstimatedDate").val();
+        var actualDate = $("#txtActualDate").val();
+        var personIncharge = $("#personInCharge").val();
+        $.ajax({
+            url: "/Project/GoToNextStep",
+            data: { guid: projectGuid, actualDate: actualDate, personIncharge: personIncharge },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    $("#modalNextStep").modal("hide");
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    function deleteProject(guid) {
+        $.ajax({
+            url: "/Project/DeleteProject",
+            data: { guid: guid },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    window.location.reload();
+                } else {
+                    toastr.error(data.msg);
+                }
+            }
+        });
+    }
+</script>

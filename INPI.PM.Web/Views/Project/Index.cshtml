@@ -1,0 +1,137 @@
+﻿@using INPI.PM.Domain.CustomerService
+@using INPI.PM.Domain.UserService
+@{
+    ViewBag.Title = "项目管理";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="row-content am-cf">
+    <div class="row">
+        <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+            <div class="widget am-cf">
+                <div class="widget-head am-cf">
+                    <div class="widget-title am-fl">项目管理</div>
+                    <div class="widget-function am-fr">
+                        <a href="/Project/ProjectEdit" class="am-btn am-btn-default">新建项目</a>
+                    </div>
+                </div>
+                <div class="widget-body  widget-body-lg am-fr">
+                    <table style="width:100%" class="am-table am-table-compact am-table-striped tpl-table-black " id="example-r">
+                        <thead>
+                            <tr>
+                                <th>项目编号</th>
+                                <th>项目名称</th>
+                                <th>所属客户</th>
+                                <th>预计交付日期</th>
+                                <th>项目进度</th>
+                                <th>是否逾期</th>
+                                <th>逾期时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (INPI.PM.Domain.ProjectService.Project project in ViewBag.projects)
+                            {
+                                <tr>
+                                    <td>@project.ProjectCode</td>
+                                    <td>@project.ProjectName</td>
+                                    <td>@CustomerFactory.GetCustomer(project.CustomerGuid).RealName</td>
+                                    <td>@project.EstimatedDeliveryDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@(project.CurrentStep == null ? "" : project.CurrentStep.StepName)</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <div class="tpl-table-black-operation">
+                                            <a onclick="nextStep('@project.GUID')">
+                                                <i class="am-icon-pencil"></i> @project.NextStep.StepName
+                                            </a>
+                                            <a href="javascript:;" class="tpl-table-black-operation-del">
+                                                <i class="am-icon-trash"></i> 删除
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNextStep">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">项目当前节点信息</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="txtEstimatedDate" class="control-label">预计完成时间</label>
+                            <input type="text" class="form-control" id="txtEstimatedDate" placeholder="请选择预计完成时间" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="txtActualDate" class="control-label">实际完成时间</label>
+                            <input type="text" class="form-control" id="txtActualDate" placeholder="请选择实际完成时间" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-info" onclick="goToNextStep()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="am-modal am-modal-prompt" tabindex="-1" id="nextStepModal">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">当前项目节点信息</div>
+        <div class="am-modal-bd">
+            <input type="text" class="am-modal-prompt-input" id="txtEstimatedDate" placeholder="请选择预计完成时间" data-am-datepicker readonly />
+            <input type="text" class="am-modal-prompt-input" id="txtActualDate" placeholder="请选择实际完成时间" data-am-datepicker readonly />
+        </div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+            <span class="am-modal-btn" data-am-modal-confirm onclick="goToNextStep()">提交</span>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var projectGuid;
+    var $modal;
+    function nextStep(guid) {
+        projectGuid = guid;
+        $modal = $("#nextStepModal");
+        $modal.modal({
+            relatedTarget: this,
+            dimmer: false
+        });
+    }
+
+    function goToNextStep() {
+        var estimatedDate = $("#txtEstimatedDate").val();
+        var actualDate = $("#txtActualDate").val();
+        $.ajax({
+            url: "/Project/GoToNextStep",
+            data: { guid: projectGuid, estimatedDate: estimatedDate, actualDate: actualDate },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    $modal.modal("close");
+                    window.location.reload();
+                }
+            }
+        });
+    }
+</script>

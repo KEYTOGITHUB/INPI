@@ -1,0 +1,118 @@
+﻿@model INPI.PM.Domain.UserService.User
+@{
+    ViewBag.Title = "用户信息";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section head{
+    <link rel="stylesheet" href="~/assets/js/select2/select2.css">
+    <link rel="stylesheet" href="~/assets/js/select2/select2-bootstrap.css">
+}
+
+<div class="page-title">
+    <div class="title-env">
+        <h1 class="title">用户信息</h1>
+    </div>
+    <div class="breadcrumb-env">
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="/Home"><i class="fa-home"></i>主页</a>
+            </li>
+            <li>
+                <a href="/User">用户管理</a>
+            </li>
+            <li>
+                <a href="#">用户信息</a>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">用户编辑</h3>
+    </div>
+    <div class="panel-body">
+        <form role="form" class="validate" method="post" id="formUser">
+            <div class="form-group">
+                <label class="control-label">用户名</label>
+                <input type="text" value="@Model.UserName" class="form-control" id="txtUserName" name="userName" data-validate="required" placeholder="请输入用户名" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">姓名</label>
+                <input type="text" value="@Model.RealName" class="form-control" id="txtRealName" name="realName" data-validate="required" placeholder="请输入姓名" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">联系方式</label>
+                <input type="text" value="@Model.PhoneNum" class="form-control" id="txtPhoneNum" name="phoneNum" data-validate="required" placeholder="请输入联系方式" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">角色</label>
+                <select class="form-control" id="selRole" multiple>
+                    <option></option>
+                    <optgroup label="角色">
+                        @foreach (INPI.PM.Domain.UserService.Role role in ViewBag.roles)
+                        {
+                            <option value="@role.GUID">@role.RoleName</option>
+                        }
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">提交</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="~/assets/js/select2/select2.min.js"></script>
+<script src="~/assets/js/jquery-validate/jquery.validate.min.js"></script>
+
+<script type="text/javascript">
+    var selRoles;
+    $(function () {
+        selRoles = $("#selRole").select2({
+            placeholder: '请选择角色',
+            allowClear: true
+        }).on('select2-open', function () {
+                $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+            });
+
+        if ('@(Model.GUID == null ? "" : Model.GUID)' != "") {
+            var roles = '@(Model.Roles == null ? "" : string.Join(",", Model.Roles.Select(p=>p.GUID)))';
+            selRoles.val(roles.split(',')).select2();
+        }
+
+        $("#formUser").submit(function () {
+            event.preventDefault();
+            if ($("#formUser").valid()) {
+                save();
+            }
+        });
+    });
+
+    function save() {
+        var userName = $("#txtUserName").val();
+        var realName = $("#txtRealName").val();
+        var phoneNum = $("#txtPhoneNum").val();
+        var roles = selRoles.val();
+        if (roles == null) {
+            toastr.error("请选择至少一个角色");
+            return false;
+        }
+        $.ajax({
+            url: "/User/SaveUser?guid=@(Model.GUID == null ? "" : Model.GUID)",
+            data: { userName: userName, realName: realName, phoneNum: phoneNum, roles: roles.join() },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    window.location.href = "/User";
+                } else {
+                    toastr.error(data.msg);
+                }
+            }
+        });
+    }
+</script>
+

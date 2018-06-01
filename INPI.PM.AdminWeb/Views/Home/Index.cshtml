@@ -1,0 +1,146 @@
+﻿@{
+    ViewBag.Title = "主页";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var totalCount = ViewBag.totalCount;
+    var finishCount = ViewBag.finishCount;
+    var toDoCount = ViewBag.totalCount - ViewBag.finishCount;
+
+    var designCount = ViewBag.designCount;
+    var productCount = ViewBag.ProductCount;
+    var housingCount = ViewBag.housingCount;
+}
+@section head{
+    <link rel="stylesheet" href="~/assets/css/fonts/meteocons/css/meteocons.css" />
+    <style>
+        .xe-widget {
+            cursor:pointer;
+        }
+    </style>
+}
+<div class="page-title">
+    <div class="title-env">
+        <h1 class="title">主页</h1>
+    </div>
+    <div class="breadcrumb-env">
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="#"><i class="fa-home"></i>主页</a>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-3">
+        <div class="xe-widget xe-counter-block xe-counter-block-blue" data-count=".num" data-from="0" data-to="@totalCount" onclick="gototable(1)">
+            <div class="xe-upper">
+                <div class="xe-icon">
+                    <i class="linecons-cloud"></i>
+                </div>
+                <div class="xe-label">
+                    <strong class="num">@totalCount</strong>
+                </div>
+            </div>
+            <div class="xe-lower">
+                <div class="border"></div>
+                <strong>项目总数</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="xe-widget xe-counter-block" data-count=".num" data-from="0" data-to="@finishCount" onclick="gototable(2)">
+            <div class="xe-upper">
+                <div class="xe-icon">
+                    <i class="linecons-database"></i>
+                </div>
+                <div class="xe-label">
+                    <strong class="num">@finishCount</strong>
+                </div>
+            </div>
+            <div class="xe-lower">
+                <div class="border"></div>
+                <strong>已完成总数</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="xe-widget xe-counter-block xe-counter-block-red" data-count=".num" data-from="0" data-to="@toDoCount" onclick="gototable(3)">
+            <div class="xe-upper">
+                <div class="xe-icon">
+                    <i class="linecons-lightbulb"></i>
+                </div>
+                <div class="xe-label">
+                    <strong class="num">@toDoCount</strong>
+                </div>
+            </div>
+            <div class="xe-lower">
+                <div class="border"></div>
+                <strong>未完成总数</strong>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="xe-widget xe-counter-block xe-counter-block-yellow" data-count=".num" data-from="0" data-to="@designCount" onclick="gototable(4)">
+            <div class="xe-upper">
+                <div class="xe-icon">
+                    <i class="linecons-lightbulb"></i>
+                </div>
+                <div class="xe-label">
+                    <strong class="num">@designCount</strong>
+                </div>
+            </div>
+            <div class="xe-lower">
+                <div class="border"></div>
+                <strong>设计总数</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="xe-widget xe-counter-block xe-counter-block-purple" data-count=".num" data-from="0" data-to="@productCount" onclick="gototable(5)">
+            <div class="xe-upper">
+                <div class="xe-icon">
+                    <i class="linecons-lightbulb"></i>
+                </div>
+                <div class="xe-label">
+                    <strong class="num">@productCount</strong>
+                </div>
+            </div>
+            <div class="xe-lower">
+                <div class="border"></div>
+                <strong>生产总数</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="xe-widget xe-counter-block xe-counter-block-pink" data-count=".num" data-from="0" data-to="@housingCount" onclick="gototable(6)">
+            <div class="xe-upper">
+                <div class="xe-icon">
+                    <i class="linecons-lightbulb"></i>
+                </div>
+                <div class="xe-label">
+                    <strong class="num">@housingCount</strong>
+                </div>
+            </div>
+            <div class="xe-lower">
+                <div class="border"></div>
+                <strong>入库总数</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/assets/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+<script src="~/assets/js/jvectormap/regions/jquery-jvectormap-world-mill-en.js"></script>
+<script src="~/assets/js/xenon-widgets.js"></script>
+
+<script>
+    function gototable(key) {
+         window.location.href="@Url.Action("ProjectList", "Home")?key="+key;
+    }
+</script>

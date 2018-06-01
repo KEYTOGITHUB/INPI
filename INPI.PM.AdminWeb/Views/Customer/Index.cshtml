@@ -1,0 +1,88 @@
+﻿@{
+    ViewBag.Title = "客户";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section head{
+    <link rel="stylesheet" href="~/assets/js/datatables/dataTables.bootstrap.css" />
+}
+
+<div class="page-title">
+    <div class="title-env">
+        <h1 class="title">客户</h1>
+    </div>
+    <div class="breadcrumb-env">
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="/Home"><i class="fa-home"></i>主页</a>
+            </li>
+            <li>
+                <a href="#">客户</a>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">客户列表</h3>
+        <div class="panel-options">
+            <button class="btn btn-info" onclick="javascript: window.location.href='/Customer/CustomerEdit'">新建客户</button>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-striped" id="customerList">
+            <thead>
+                <tr>
+                    <th>公司名称</th>
+                    <th>地址</th>
+                    <th>电话</th>
+                    <th>传真</th>
+                    <th>邮编</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody class="middle-align">
+                @foreach (INPI.PM.Domain.CustomerService.Customer customer in ViewBag.customers)
+                {
+                    <tr>
+                        <td>@customer.CompanyName</td>
+                        <td>@customer.Address</td>
+                        <td>@customer.PhoneNum</td>
+                        <td>@customer.FaxNum</td>
+                        <td>@customer.PostCode</td>
+                        <td>
+                            <a href="/Customer/CustomerEdit?guid=@customer.GUID" class="btn btn-secondary btn-sm btn-icon icon-left">编辑</a>
+                            <a onclick="deleteCustomer(this,'@customer.GUID')" class="btn btn-danger btn-sm btn-icon icon-left">删除</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="~/assets/js/datatables/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/js/datatables/dataTables.bootstrap.js"></script>
+<script src="~/assets/js/datatables/yadcf/jquery.dataTables.yadcf.js"></script>
+<script src="~/assets/js/datatables/tabletools/dataTables.tableTools.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#customerList").dataTable();
+    });
+
+    function deleteCustomer(obj, guid) {
+        $.ajax({
+            url: '@Url.Action("DeleteCustomer", "Customer")',
+            data: { guid: guid },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    $(obj).parent().parent().remove();
+                } else {
+
+                }
+            }
+        });
+    }
+</script>

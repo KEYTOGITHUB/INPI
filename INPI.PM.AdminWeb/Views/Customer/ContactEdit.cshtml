@@ -1,0 +1,170 @@
+﻿@model INPI.PM.Domain.CustomerService.Contact
+@using INPI.PM.Domain.CustomerService
+@{
+    ViewBag.Title = "联系人信息";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-title">
+    <div class="title-env">
+        <h1 class="title">联系人信息</h1>
+    </div>
+    <div class="breadcrumb-env">
+        <ol class="breadcrumb bc-1">
+            <li>
+                <a href="/Home"><i class="fa-home"></i>主页</a>
+            </li>
+            <li>
+                <a href="/Customer/Contact">客户联系人</a>
+            </li>
+            <li>
+                <a href="#">联系人信息</a>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">联系人编辑</h3>
+    </div>
+    <div class="panel-body">
+        <form role="form" class="validate" method="post" id="formContact">
+            <div class="form-group">
+                <label class="control-label">所属客户</label>
+                <input type="text" class="form-control" id="txtCustomerGuid" name="customerGuid" style="display:none;" />
+                <input type="text" class="form-control" value="@(string.IsNullOrEmpty(Model.CustomerGuid)?"":new CustomerFactory().GetCustomer(Model.CustomerGuid)?.CompanyName)" id="txtCustomerName" name="customerName" placeholder="请选择用户所属的公司" readonly onclick="javascript: $('#modalCustomer').modal('show');" />
+            </div>
+            @if (string.IsNullOrEmpty(Model.GUID))
+            {
+                <div class="form-group">
+                    <label class="control-label">账号</label>
+                    <input type="text" class="form-control" id="txtUserName" name="userName" data-validate="required" placeholder="请输入账号" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">密码</label>
+                    <input type="text" class="form-control" id="txtPassword" name="password" data-validate="required" placeholder="请输入密码" />
+                </div>
+            }
+            <div class="form-group">
+                <label class="control-label">姓名</label>
+                <input type="text" value="@Model.RealName" class="form-control" id="txtRealName" name="realName" data-validate="required" placeholder="请输入姓名" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">公司</label>
+                <input type="text" value="@Model.Company" class="form-control" id="txtCompany" name="company" data-validate="required" placeholder="请输入公司名称" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">职位</label>
+                <input type="text" value="@Model.Position" class="form-control" id="txtPosition" name="position" data-validate="required" placeholder="请输入职位" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">联系方式</label>
+                <input type="text" value="@Model.PhoneNum" class="form-control" id="txtPhoneNum" name="phoneNum" data-validate="required" placeholder="请输入联系方式" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">传真</label>
+                <input type="text" value="@Model.FaxNum" class="form-control" id="txtFaxNum" name="faxNum" placeholder="请输入传真" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">邮编</label>
+                <input type="text" value="@Model.PostCode" class="form-control" id="txtPostCode" name="postCode" data-validate="required" placeholder="请输入邮编" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">地址</label>
+                <input type="text" value="@Model.Address" class="form-control" id="txtAddress" name="address" placeholder="请输入地址" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCustomer">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">选择客户</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped" id="customerList">
+                    <thead>
+                        <tr>
+                            <th>公司名称</th>
+                            <th>地址</th>
+                            <th>电话</th>
+                            <th>传真</th>
+                            <th>邮编</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="middle-align">
+                        @foreach (INPI.PM.Domain.CustomerService.Customer customer in ViewBag.customers)
+                        {
+                            <tr>
+                                <td>@customer.CompanyName</td>
+                                <td>@customer.Address</td>
+                                <td>@customer.PhoneNum</td>
+                                <td>@customer.FaxNum</td>
+                                <td>@customer.PostCode</td>
+                                <td>
+                                    <a onclick="selectCustomer('@customer.GUID','@customer.CompanyName')" class="btn btn-info btn-sm btn-icon icon-left">选择</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/assets/js/jquery-validate/jquery.validate.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#formContact").submit(function () {
+            event.preventDefault();
+            if ($("#formContact").valid()) {
+                save();
+            }
+        });
+    });
+
+    function selectCustomer(guid, name) {
+        $("#txtCustomerGuid").val(guid);
+        $("#txtCustomerName").val(name);
+        $("#modalCustomer").modal("hide");
+    }
+
+    function save() {
+        var userName = $("#txtUserName").val();
+        var password = $("#txtPassword").val();
+        var realName = $("#txtRealName").val();
+        var company = $("#txtCompany").val();
+        var position = $("#txtPosition").val();
+        var phoneNum = $("#txtPhoneNum").val();
+        var faxNum = $("#txtFaxNum").val();
+        var postCode = $("#txtPostCode").val();
+        var address = $("#txtAddress").val();
+        var customerGuid = $("#txtCustomerGuid").val();
+        $.ajax({
+            url: "/Customer/SaveContact?guid=@(Model.GUID == null ? "" : Model.GUID)",
+            data: {
+                realName: realName, phoneNum: phoneNum, company: company, position: position, customerGuid: customerGuid,
+                faxNum: faxNum, postCode: postCode, address: address, userName: userName, password: password
+            },
+            type: "post",
+            success: function (data) {
+                if (data.result == 1) {
+                    window.location.href = "/Customer/Contact";
+                } else {
+                    toastr.error(data.msg);
+                }
+            }
+        });
+    }
+</script>
+
