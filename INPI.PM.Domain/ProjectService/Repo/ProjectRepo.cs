@@ -25,6 +25,11 @@ namespace INPI.PM.Domain.ProjectService
             //return _projectList.Where(p => p.CustomerGuid == guid).ToList();
         }
 
+        public List<Project> GetProjectsByContact(string guid)
+        {
+            return _redisHelper.GetListFromSet<Project>(_key, p => p.ContactGuid == guid);
+;        }
+
         public List<Project> GetAllProjects()
         {
             return _redisHelper.GetAllListFromSet<Project>(_key);

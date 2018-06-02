@@ -13,15 +13,34 @@
                     <ul class="cbp_tmtimeline">
                         @foreach (INPI.PM.Domain.ProjectService.ProjectSchedule schedule in project.ProjectSchedules)
                         {
-                            <li>
-                                <time class="cbp_tmtime" datetime="2014-10-03T18:30"><span class="large">@schedule.ActualCompleteDate.Value.ToString("yyyy-MM-dd")</span> </time>
+                            if (project.CurrentStep != null && project.CurrentStep.StepOrder >= schedule.Step.StepOrder)
+                            {
+                                <li>
+                                    <time class="cbp_tmtime" datetime="2014-10-03T18:30">
+                                        <span class="large" style="color:black">@(schedule.ActualCompleteDate != null ? schedule.ActualCompleteDate.Value.ToString("yyyy-MM-dd") : "")</span>
+                                    </time>
+                                    <div class="cbp_tmicon timeline-bg-primary">
+                                        <i class="fa-arrows"></i>
+                                    </div>
+                                    <div class="cbp_tmlabel">
+                                        <span class="large" style="color:black;font-weight:bold;">@schedule.Step.StepName</span>
+                                    </div>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                <time class="cbp_tmtime" datetime="2014-10-03T18:30">
+                                    <span class="large">@(schedule.ActualCompleteDate != null ? schedule.ActualCompleteDate.Value.ToString("yyyy-MM-dd") : "")</span>
+                                </time>
                                 <div class="cbp_tmicon timeline-bg-primary">
                                     <i class="fa-calendar"></i>
                                 </div>
                                 <div class="cbp_tmlabel">
                                     <span>@schedule.Step.StepName</span>
                                 </div>
-                            </li>
+                                </li>
+                            }
                         }
                     </ul>
                 </div>

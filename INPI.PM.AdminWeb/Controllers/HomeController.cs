@@ -69,7 +69,7 @@ namespace INPI.PM.AdminWeb.Controllers
         public ActionResult CustomerHome()
         {
             Contact currentCustomer = (Contact)Session["currentUser"];
-            ViewBag.projects = _projectFactory.GetProjectsByCustomer(currentCustomer.GUID).OrderByDescending(p => p.EstimatedDeliveryDate);
+            ViewBag.projects = _projectFactory.GetProjectsByContact(currentCustomer.GUID).OrderByDescending(p => p.EstimatedDeliveryDate);
             return View();
         }
 

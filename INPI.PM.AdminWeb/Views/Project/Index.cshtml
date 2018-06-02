@@ -140,12 +140,20 @@
     }
 
     function goToNextStep() {
-        //var estimatedDate = $("#txtEstimatedDate").val();
         var actualDate = $("#txtActualDate").val();
+        if (actualDate=="") {
+            alert("您的日期有误，请重新选择！");
+            return;
+        }
         var personIncharge = $("#personInCharge").val();
+        if ($.trim(personIncharge) == "")
+        {
+            alert("请重新输入负责人！");
+            return;
+        }
         $.ajax({
             url: "/Project/GoToNextStep",
-            data: { guid: projectGuid, actualDate: actualDate, personIncharge: personIncharge },
+            data: { guid: projectGuid, actualDate: actualDate, personIncharge: personIncharge.trim() },
             type: "post",
             success: function (data) {
                 if (data.result == 1) {

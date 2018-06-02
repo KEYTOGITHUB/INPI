@@ -25,6 +25,11 @@ namespace INPI.PM.Domain.ProjectService
             return _projectRepo.GetProjectsByCustomer(guid);
         }
 
+        public List<Project> GetProjectsByContact(string guid)
+        {
+            return _projectRepo.GetProjectsByContact(guid);
+        }
+
         public Project AddProject(string projectCode, string projectName, string customerGuid, string contactGuid,
             DateTime createDate, DateTime estimatedDeliveryDate, string personInCharge, string attachment, string currentUser)
         {
